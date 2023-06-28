@@ -58,6 +58,8 @@
   </body>
   <script src="index.js"></script>
   <script>
-    Validator("#form-1");
+    Validator("#form-1", function (data) {
+      console.log(data);
+    });
   </script>
 </html>

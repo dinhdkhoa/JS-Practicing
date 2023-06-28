@@ -15,37 +15,39 @@ function Validator(formId, submitFunction) {
       input.length >= max ? undefined : `Độ dài phải ngắn hơn ${max} kí tự`,
   };
 
-  const getParent = (currentElementSelector, parentElementSelector) => {
-    while (currentElementSelector.parentElement) {
-      if (currentElementSelector.parentElement.matches(parentElementSelector)) {
-        return currentElementSelector.parentElement;
+  const getParent = (currentElement, parentElementSelector) => {
+    let parentElement = currentElement.parentElement;
+    while (parentElement) {
+      if (parentElement.matches(parentElementSelector)) {
+        return parentElement;
       }
-      currentElementSelector = currentElementSelector.parentElement;
+      parentElement = parentElement.parentElement;
     }
+    return null;
   };
 
   const handleValidate = (e) => {
     const rules = formRules[e.target.name];
-    let errorMessage;
+    let errorMessage = null;
     for (const rule of rules) {
       errorMessage = rule(e.target.value);
+      if (errorMessage) {
+        break;
+      }
     }
     const parentElement = getParent(e.target, ".form-group");
     if (parentElement) {
       const errorSpan = parentElement.querySelector(".form-message");
       if (errorSpan) {
-        if (errorMessage) {
-          errorSpan.innerText = errorMessage;
-          parentElement.classList.add("invalid");
-          if (validData[e.target.name]) {
-            delete validData[e.target.name];
-          }
-        } else {
-          validData[e.target.name] = e.target.value;
+        errorSpan.innerText = errorMessage || "";
+        parentElement.classList.toggle("invalid", !!errorMessage);
+        if (validData[e.target.name]) {
+          delete validData[e.target.name];
         }
       }
     }
   };
+
   const handleClear = (e) => {
     const parentElement = getParent(e.target, ".form-group");
     if (parentElement) {
@@ -62,14 +64,16 @@ function Validator(formId, submitFunction) {
     const data = validData;
     const isValid =
       Object.keys(validData).length === Object.keys(formRules).length;
-    isValid && submitFunction && submitFunction(data);
+    if (isValid && submitFunction) {
+      submitFunction(data);
+    }
   };
 
   const formElement = document.querySelector(formId);
   if (formElement) {
     const inputElements = formElement.querySelectorAll("input");
 
-    for (var input of inputElements) {
+    for (const input of inputElements) {
       const rules = input.getAttribute("rule").split("|");
 
       rules.forEach((rule) => {
@@ -89,9 +93,10 @@ function Validator(formId, submitFunction) {
         }
       });
 
-      input.onblur = handleValidate;
-      input.oninput = handleClear;
+      input.addEventListener("blur", handleValidate);
+      input.addEventListener("input", handleClear);
     }
-    formElement.onsubmit = handleSubmit;
+
+    formElement.addEventListener("submit", handleSubmit);
   }
 }
