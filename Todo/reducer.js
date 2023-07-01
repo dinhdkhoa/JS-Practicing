@@ -26,21 +26,24 @@ const actions = {
   // }
   add: ({ todos }, title) => {
     todos.push({ title, completed: false });
-    // saveToLS(todos);
+    saveToLS(todos);
   },
   toggle: ({ todos }, index) => {
     const todo = todos[index];
     todo.completed = !todo.completed;
-    // saveToLS(todos);
+    saveToLS(todos);
   },
   toggleAll: ({ todos }, checked) => {
     todos.forEach((todo) => (todo.completed = checked));
+    saveToLS(todos);
   },
   delete: ({ todos }, index) => {
     todos.splice(index, 1);
+    saveToLS(todos);
   },
   deleteAllCompleted: (state) => {
     state.todos = state.todos.filter(state.filters.active);
+    saveToLS(state.todos);
   },
   switchFilter: (state, key) => {
     state.filter = key;
@@ -56,6 +59,7 @@ const actions = {
         state.todos.splice(state.editIndex, 1);
       }
       state.editIndex = null;
+      saveToLS(state.todos);
     }
   },
   stopEdit: (state) => {
