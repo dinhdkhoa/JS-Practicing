@@ -5,8 +5,9 @@ function Header() {
       class="new-todo"
       placeholder="What needs to be done?"
       autofocus
+      onkeyup="event.keyCode === 13 && this.value && dispatch('add', this.value.trim())"
     />
   </header>`;
 }
 
-export default Header();
+export default Header;
