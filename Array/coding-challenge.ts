@@ -1,39 +1,28 @@
-const removeNonAlphabetCharToLowCase = (a: string) => {
-  return ""
+const removeNonAlphabetCharToLowCaseString = (str: string) => {
+  const cleanedString = str.replace(/[^a-zA-Z]/g, "")
+  const lowercaseString = cleanedString.toLowerCase()
+  return lowercaseString
 }
 
-const findAndRemoveRepetedChar = (a: string[]) => {
-  let checkingItem = 0
-  let arrayLengthBeforeRemove = a.length
-  while (checkingItem < arrayLengthBeforeRemove) {
-    let char = a[checkingItem]
-    for (let i = checkingItem + 1; i < a.length; i++) {
-      if (a[i] === char) {
-        a.splice(i, 0)
-      }
-    }
-    if (arrayLengthBeforeRemove !== a.length) {
-      if (checkingItem === a.length - 2) break
-      arrayLengthBeforeRemove = a.length
-      checkingItem++
-    }
-    checkingItem++
+const findAndRemoveRepetedChar = (str: string) => {
+  const charCount: Record<string, number> = {}
+  const newStr: string[] = []
+  for (let char of str) {
+    charCount[char] = (charCount[char] || 0) + 1
   }
-  return a.join("")
+  for (let char of str) {
+    if (charCount[char] === 1) {
+      newStr.push(char)
+    }
+  }
+  return newStr.join("")[0]
 }
 
-const firstNonRepeted = (a: string) => {
-  const newStrArr: string = removeNonAlphabetCharToLowCase(a)
-  const noRepetedCharStr = findAndRemoveRepetedChar(newStrArr.split(""))
+const firstNonRepeted = (str: string) => {
+  const newStr: string = removeNonAlphabetCharToLowCaseString(str)
+  return findAndRemoveRepetedChar(newStr)
 }
 
-// for(let i = 0 ; i < a.length; i++){
-//     console.log(a, a.length)
-//     for(let x = 0 ; x < a.length; i++){
-//         a.shift()
-//         console.log(a.length)
-//         break
-//     }
-//     continue
-//     console.log("hello")
-// }
+console.log(firstNonRepeted("hello, hi"))
+console.log(firstNonRepeted("aabcc"))
+console.log(firstNonRepeted("aabbcc"))
